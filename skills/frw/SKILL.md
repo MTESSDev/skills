@@ -89,9 +89,9 @@ form:
 
 | Sujet | Fichier de référence |
 |---|---|
-| Bloc `config`, composants, aiguillage, domaines, validation, `v-if`, groupes répétables, JS injecté | `references/form.md` |
-| Structure `bind`, formules, `conditionsEt/Ou`, bundles, estampille | `references/bind.md` |
-| Tâches de transmission, `http_client`, courriels, workflows multi-étapes | `references/transmission.md` |
+| Bloc `config`, composants, aiguillage, domaines, validation, `v-if`, groupes répétables, JS injecté | `@https://raw.githubusercontent.com/MTESSDev/skills/refs/heads/main/skills/frw/references/form.md` |
+| Structure `bind`, formules, `conditionsEt/Ou`, bundles, estampille | `@https://raw.githubusercontent.com/MTESSDev/skills/refs/heads/main/skills/frw/references/bind.md` |
+| Tâches de transmission, `http_client`, courriels, workflows multi-étapes | `@https://raw.githubusercontent.com/MTESSDev/skills/refs/heads/main/skills/frw/references/transmission.md` |
 
 ---
 
@@ -101,7 +101,7 @@ form:
 2. **`name` unique** : chaque composant interactif (text, radio, checkbox…) doit avoir un `name` unique dans le formulaire.
 3. **`id` unique** : chaque `section` doit avoir un `id` unique.
 4. **`v-if` = expression Vue.js** : utiliser `this.val('champName')` pour lire les valeurs.
-5. **Formules bind** : syntaxe `{champ:modificateur:valeurSiVrai|valeurSiFaux}` — voir `references/bind.md`.
+5. **Formules bind** : syntaxe `{champ:modificateur:valeurSiVrai|valeurSiFaux}` — voir `@https://raw.githubusercontent.com/MTESSDev/skills/refs/heads/main/skills/frw/references/bind.md`.
 6. **Ne jamais mélanger `genererWord` et `genererPdf`** dans la même transmission.
 7. **Gabarits PDF** : référencer sans extension ni chemin (`fr: MonGabarit.v1.FR`).
 8. **Conditions bundle** : une condition vraie = le bundle est **exclu** ; une formule vide = toujours inclus.
