@@ -678,6 +678,36 @@ config:
 options: yesno        # Oui / Non en français (et Yes / No si bilingue)
 ```
 
+> **`options: yesno` — valeurs réelles `"true"` / `"false"` (strings)**
+>
+> Le shorthand `yesno` est la **seule façon correcte** de faire une question oui/non. Ne jamais définir un domaine long à la main.
+>
+> Les valeurs stockées sont les chaînes `"true"` et `"false"`, pas des booléens :
+> ```yaml
+> # ✅ Correct
+> - type: radio
+>   name: estResident
+>   label:
+>     fr: Êtes-vous résident?
+>   options: yesno
+>
+> # Dans v-if ou bind, comparer à la string "true" / "false" :
+> v-if: "this.val('estResident') === 'true'"
+> ```
+>
+> ```yaml
+> # ❌ Erreur fréquente — ne pas recréer un domaine oui/non à la main
+> config:
+>   domaines:
+>     ouiNon:
+>       oui:
+>         label:
+>           fr: Oui
+>       non:
+>         label:
+>           fr: Non
+> ```
+
 ### Référence à un domaine `config.domaines`
 ```yaml
 - type: radio
