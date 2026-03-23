@@ -14,6 +14,11 @@
 
 ---
 
+> **Convention de nommage** : Les attributs `id` (sections) et `name` (composants) doivent toujours être en **camelCase**.
+> Exemples : `id: coordonneesPersonnelles`, `name: dateNaissance`, `name: revenuAnnuel`.
+
+---
+
 ## 1. Bloc `config`
 
 ```yaml
@@ -282,8 +287,8 @@ form:
   label:
     fr: Date de naissance
   validations:
-    avant: "2020-01-01"   # La date doit être avant cette date
-    apres: "1900-01-01"   # La date doit être après cette date
+    before: "2020-01-01"   # La date doit être avant cette date, laisser vide pour date du jour
+    after: "1900-01-01"   # La date doit être après cette date, laisser vide pour date du jour
   # Ne pas ajouter "date:" dans validations — la validation de format est gérée par le composant
 ```
 
@@ -547,9 +552,8 @@ validations:
   startsWith: "prefix"                  # Commence par
   endsWith: "suffix"                    # Finit par
   matches: autreChamp                   # Doit correspondre à un autre champ (confirmation)
-  before: "2025-12-31"                  # Date avant (pour type: date)
-  after: "2000-01-01"                   # Date après (pour type: date)
-  avant: "autreChampDate"               # Avant la valeur d'un autre champ date
+  before: "2025-12-31"                  # Date avant (pour type: date), ou aucune date pour celle du jour
+  after: "2000-01-01"                   # Date après (pour type: date), ou aucune date pour celle du jour
   accepted:                             # Doit être coché (checkbox)
   bail:                                 # Arrêter à la première erreur
   mime: application/pdf               # Types MIME autorisés (customfile), ne pas mettre sauf si demande explicite de l'utilisateur
@@ -560,6 +564,82 @@ validations:
       (value) {
         return value.length > 3 || 'Minimum 4 caractères';
       }
+```
+
+### `comparerChamps` — Comparaison entre deux champs
+
+Compare la valeur du champ validé à celle d'un autre champ selon un opérateur. Appliquer la validation sur le champ saisi **en dernier**.
+
+**Opérateurs disponibles :** `egal`, `different`, `plusPetit`, `plusPetitEgal`, `plusGrand`, `plusGrandEgal`
+
+**Syntaxe selon le contexte :**
+
+| Contexte | Valeur |
+|---|---|
+| Champ à la racine | `operateur,nomDuChamp` |
+| Champ dans un groupe | `operateur,nomDuGroupe.nomDuChamp` |
+| Champ avec `prefixId` | `operateur,prefixId$nomDuChamp` |
+| Groupe avec `prefixId` | `operateur,prefixId$nomDuGroupe.nomDuChamp` |
+
+#### Exemple — Champs à la racine
+```yaml
+- type: inline
+  components:
+    - name: dateDebut
+      type: date
+      label:
+        fr: Date de début
+    - name: dateFin
+      type: date
+      label:
+        fr: Date de fin
+      validations:
+        comparerChamps: plusGrandEgal,dateDebut
+
+- type: inline
+  components:
+    - name: nombre1
+      type: nombreEntier
+      label:
+        fr: Nombre 1
+    - name: nombre2
+      type: nombreEntier
+      label:
+        fr: Nombre 2
+      validations:
+        comparerChamps: different,nombre1
+```
+
+#### Exemple — Champs dans un groupe répétable
+```yaml
+- type: repeatableGroup
+  name: plageDates
+  repeatable: true
+  label:
+    fr: Éléments
+  components:
+    - type: inline
+      components:
+        - name: dateDebut
+          type: date
+          label:
+            fr: Date de début
+        - name: dateFin
+          type: date
+          label:
+            fr: Date de fin
+          validations:
+            comparerChamps: plusGrand,plageDates.dateDebut
+    - name: nombre1
+      type: nombreEntier
+      label:
+        fr: Nombre 1
+    - name: nombre2
+      type: nombreEntier
+      label:
+        fr: Nombre 2
+      validations:
+        comparerChamps: plusPetit,plageDates.nombre1
 ```
 
 ### Messages de validation personnalisés
