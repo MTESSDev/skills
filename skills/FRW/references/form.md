@@ -274,7 +274,7 @@ form:
       fr: Option 1
     opt2:
       fr: Option 2
-  # Ne pas utiliser ce composant si plus de 10 choix. Utiliser plutôt listeDeroulante multiple et activer la recherche si plus de 20 choix.
+  # Ne pas utiliser ce composant si plus de 10 choix. Utiliser plutôt listeDeroulante multiple.
   # Ne jamais utiliser ce composant avec un seul choix. Utiliser plutôt checkbox (choix simple).
 ```
 
