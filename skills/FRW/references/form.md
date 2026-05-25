@@ -255,6 +255,14 @@ form:
   # options: sports
 ```
 
+### `checkbox` — Cases à cocher (choix simple)
+```yaml
+- type: checkbox
+  name: confirmationRegles
+  label:
+    fr: Je confirme respecter les règles relatives au présentiel au bureau
+```
+
 ### `checkbox` — Cases à cocher (choix multiples)
 ```yaml
 - type: checkbox
@@ -266,6 +274,8 @@ form:
       fr: Option 1
     opt2:
       fr: Option 2
+  # Ne pas utiliser ce composant si plus de 10 choix. Utiliser plutôt listeDeroulante multiple et activer la recherche si plus de 20 choix.
+  # Ne jamais utiliser ce composant avec un seul choix. Utiliser plutôt checkbox (choix simple).
 ```
 
 ### `listeDeroulante` / `select` — Liste déroulante
@@ -276,6 +286,9 @@ form:
     fr: Région
     en: Region
   options: regionsDomaine  # Référence à un domaine défini dans config.domaines
+  additionnals:
+    recherchable: true # Pour activer la recherche (si plus de 20 options ou si explicitement demandé)
+    multiple: true # Pour sélection multiple. 
   # Pour données externes (transmission http_client_set requis) :
   # sourceExterne: regions
 ```
@@ -485,6 +498,7 @@ form:
       label:
         fr: Nom
         en: Last name
+  # Ne jamais utiliser ce composant SAUF si explicitement demandé.
 ```
 
 ### `group` — Groupe de composants liés
