@@ -171,7 +171,7 @@ form:
 ### `accordeon` — Contenu rétractable
 ```yaml
 - type: accordeon
-  label:
+  title:
     fr: Titre accordéon
     en: Accordion title
   text:
