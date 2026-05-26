@@ -469,6 +469,7 @@ Préférer ce composant à un `checkbox` d'attestation chaque fois qu'un documen
 > - `texte-consentement` : HTML affiché sous la zone de signature — utiliser pour la formule légale ou le texte de déclaration.
 > - `lecture-seule: false` : permet la saisie ; mettre `true` uniquement pour afficher une signature existante sans permettre de la modifier.
 > - Ne pas utiliser `texteConsentement:` (ancienne syntaxe, non supportée).
+> - **Ne jamais ajouter des champs `nom`, `prénom` ou `initiales` séparément** : le composant `signature` les embarque déjà en interne. Les dupliquer crée une redondance inutile pour l'utilisateur.
 
 ### `suiviEtapesWF` — Suivi visuel des étapes workflow
 ```yaml
