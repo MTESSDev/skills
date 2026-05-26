@@ -450,19 +450,25 @@ form:
     en: Payment
 ```
 
-### `signature` — Signature électronique (workflows)
+### `signature` — Signature électronique
+
+Préférer ce composant à un `checkbox` d'attestation chaque fois qu'un document exige une signature ou une déclaration solennelle.
+
 ```yaml
 - type: signature
-  name: signatureLocateur
+  name: signatureDeclarant
   label:
     fr: Signature électronique
     en: Electronic signature
-  texteConsentement:
-    fr: |
-      <p>En signant, vous acceptez les conditions.</p>
-    en: |
-      <p>By signing, you accept the conditions.</p>
+  additionals:
+    texte-consentement: <p>En apposant votre signature, vous confirmez avoir lu, compris et accepté les modalités.</p>
+    lecture-seule: false   # true = affichage seul (ex. : contre-signature en lecture)
 ```
+
+> **Notes :**
+> - `texte-consentement` : HTML affiché sous la zone de signature — utiliser pour la formule légale ou le texte de déclaration.
+> - `lecture-seule: false` : permet la saisie ; mettre `true` uniquement pour afficher une signature existante sans permettre de la modifier.
+> - Ne pas utiliser `texteConsentement:` (ancienne syntaxe, non supportée).
 
 ### `suiviEtapesWF` — Suivi visuel des étapes workflow
 ```yaml
