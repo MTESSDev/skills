@@ -190,9 +190,7 @@ form:
 >   fr: Libellé
 >   en: Label
 > v-if: "expression"        # Condition d'affichage
-> disabled: "expression"    # Condition de désactivation
-> classes: ma-classe
-> outerClasses: outer-class
+> outerClasses: xxl # sm (63px), md (146px), lg (249px), xl (528px), xxl (868px) pour définir la taille d'un contrôle. Défaut : xl. Utiliser la classe qui donne une largeur adaptée au contenu attendu dans le champ.
 > inputClasses: input-class
 > help:
 >   fr: Texte   # Texte de précision d'aide pour éviter les erreurs de saisies pour nuancer, pour les détails plus précis, utiliser tooltip
