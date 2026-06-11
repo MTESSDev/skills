@@ -131,6 +131,8 @@ form:
       <p>Rich HTML content.</p>
 ```
 
+> **⚠️ Règle :** Toujours inclure `mb-32` dans `classes` d'un composant `dynamic` pour assurer un espacement bas correct. Exemple : `classes: mb-32` ou `classes: page-texte mb-32`.
+
 ### `avis` — Bloc informatif stylisé
 ```yaml
 - type: avis
@@ -393,7 +395,6 @@ form:
   name: adressePrincipale
   label:
     fr: Adresse
-    en: Address
   # Champs inclus automatiquement : NoCivique, Appartement, Rue, Municipalite, Province, CodePostal
 ```
 
@@ -403,8 +404,17 @@ form:
   name: adresseEtranger
   label:
     fr: Adresse à l'étranger
-    en: International address
+  # Champs inclus automatiquement : Adresse, Appartement, CasePostale, Ville, Province, Pays, CodePostal
 ```
+
+> **⚠️ Règle — Ne jamais recréer un bloc d'adresse manuellement**
+>
+> Dès que le formulaire contient des champs liés à une adresse (rue/adresse, appartement, ville, province, code postal), utiliser **obligatoirement** l'un des composants composites ci-dessus. Ne **jamais** créer des champs `text` / `listeDeroulante` / `codePostal` séparés pour représenter une adresse.
+>
+> | Situation | Composant à utiliser |
+> |---|---|
+> | Adresse québécoise ou canadienne, sans choix de pays | `type: adresse` |
+> | Adresse avec un champ « Pays » proposé à l'utilisateur | `type: adresseInternationale` |
 
 ### `customfile` — Pièce jointe
 ```yaml
@@ -523,28 +533,35 @@ Préférer ce composant à un `checkbox` d'attestation chaque fois qu'un documen
         en: Field
 ```
 
+> **⚠️ Règle :** Un `group` ne peut **jamais** être imbriqué dans un autre `group` ni dans un `repeatableGroup`. Si des sous-sections visuelles sont nécessaires à l'intérieur d'un groupe répétable, lister les champs à plat directement dans `components`.
+
 ### `repeatableGroup` — Groupe répétable
 ```yaml
 - type: repeatableGroup
   name: enfants
   label:
     fr: Enfants
-    en: Children
   repeatable: true
   minimum: 0                # Nombre minimum d'instances
   limit: 5                  # Nombre maximum d'instances
+  addLabel:
+    fr: Ajouter un enfant   # Libellé du bouton d'ajout — OBLIGATOIRE
+  removeLabel:
+    fr: Retirer cet enfant   # Libellé du bouton de suppression — OBLIGATOIRE
   components:
     - type: text
       name: prenomEnfant
       label:
         fr: Prénom de l'enfant
-        en: Child's first name
     - type: date
       name: dateNaissanceEnfant
       label:
         fr: Date de naissance
-        en: Date of birth
 ```
+
+> **⚠️ Règles :**
+> - `addLabel` et `removeLabel` sont **obligatoires** sur tout `repeatableGroup`. Toujours les formuler à partir du nom de l'entité répétable (ex. « Ajouter un locataire » / « Retirer un locataire »).
+> - Les composants `group` ne sont **pas** autorisés dans les `components` d'un `repeatableGroup`. Lister tous les champs directement à la racine de `components`.
 
 ---
 
