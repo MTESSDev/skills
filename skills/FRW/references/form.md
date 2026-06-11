@@ -131,6 +131,8 @@ form:
       <p>Rich HTML content.</p>
 ```
 
+> **⚠️ Règle :** Toujours inclure `mb-32` dans `classes` d'un composant `dynamic` pour assurer un espacement bas correct. Exemple : `classes: mb-32` ou `classes: page-texte mb-32`.
+
 ### `avis` — Bloc informatif stylisé
 ```yaml
 - type: avis
@@ -171,7 +173,7 @@ form:
 ### `accordeon` — Contenu rétractable
 ```yaml
 - type: accordeon
-  label:
+  title:
     fr: Titre accordéon
     en: Accordion title
   text:
@@ -190,9 +192,7 @@ form:
 >   fr: Libellé
 >   en: Label
 > v-if: "expression"        # Condition d'affichage
-> disabled: "expression"    # Condition de désactivation
-> classes: ma-classe
-> outerClasses: outer-class
+> outerClasses: xxl # sm (63px), md (146px), lg (249px), xl (528px), xxl (868px) pour définir la taille d'un contrôle. Défaut : xl. Utiliser la classe qui donne une largeur adaptée au contenu attendu dans le champ.
 > inputClasses: input-class
 > help:
 >   fr: Texte   # Texte de précision d'aide pour éviter les erreurs de saisies pour nuancer, pour les détails plus précis, utiliser tooltip
@@ -255,6 +255,14 @@ form:
   # options: sports
 ```
 
+### `checkbox` — Cases à cocher (choix simple)
+```yaml
+- type: checkbox
+  name: confirmationRegles
+  label:
+    fr: Je confirme respecter les règles relatives au présentiel au bureau
+```
+
 ### `checkbox` — Cases à cocher (choix multiples)
 ```yaml
 - type: checkbox
@@ -266,6 +274,8 @@ form:
       fr: Option 1
     opt2:
       fr: Option 2
+  # Ne pas utiliser ce composant si plus de 10 choix. Utiliser plutôt listeDeroulante multiple.
+  # Ne jamais utiliser ce composant avec un seul choix. Utiliser plutôt checkbox (choix simple).
 ```
 
 ### `listeDeroulante` / `select` — Liste déroulante
@@ -276,6 +286,11 @@ form:
     fr: Région
     en: Region
   options: regionsDomaine  # Référence à un domaine défini dans config.domaines
+  additionnals:
+    recherchable: true # Pour activer la recherche (si plus de 20 options ou si explicitement demandé)
+    multiple: true # Pour sélection multiple. 
+    largeur: lg # Largeur de la liste. Tentez d'utiliser la largeur qui correspond à l'option dont le texte est le plus long. Valeurs possibles : lg (528px), md (342px), sm (156px). Défaut md.
+
   # Pour données externes (transmission http_client_set requis) :
   # sourceExterne: regions
 ```
@@ -380,7 +395,6 @@ form:
   name: adressePrincipale
   label:
     fr: Adresse
-    en: Address
   # Champs inclus automatiquement : NoCivique, Appartement, Rue, Municipalite, Province, CodePostal
 ```
 
@@ -390,8 +404,17 @@ form:
   name: adresseEtranger
   label:
     fr: Adresse à l'étranger
-    en: International address
+  # Champs inclus automatiquement : Adresse, Appartement, CasePostale, Ville, Province, Pays, CodePostal
 ```
+
+> **⚠️ Règle — Ne jamais recréer un bloc d'adresse manuellement**
+>
+> Dès que le formulaire contient des champs liés à une adresse (rue/adresse, appartement, ville, province, code postal), utiliser **obligatoirement** l'un des composants composites ci-dessus. Ne **jamais** créer des champs `text` / `listeDeroulante` / `codePostal` séparés pour représenter une adresse.
+>
+> | Situation | Composant à utiliser |
+> |---|---|
+> | Adresse québécoise ou canadienne, sans choix de pays | `type: adresse` |
+> | Adresse avec un champ « Pays » proposé à l'utilisateur | `type: adresseInternationale` |
 
 ### `customfile` — Pièce jointe
 ```yaml
@@ -437,19 +460,26 @@ form:
     en: Payment
 ```
 
-### `signature` — Signature électronique (workflows)
+### `signature` — Signature électronique
+
+Préférer ce composant à un `checkbox` d'attestation chaque fois qu'un document exige une signature ou une déclaration solennelle.
+
 ```yaml
 - type: signature
-  name: signatureLocateur
+  name: signatureDeclarant
   label:
     fr: Signature électronique
     en: Electronic signature
-  texteConsentement:
-    fr: |
-      <p>En signant, vous acceptez les conditions.</p>
-    en: |
-      <p>By signing, you accept the conditions.</p>
+  additionals:
+    texte-consentement: <p>En apposant votre signature, vous confirmez avoir lu, compris et accepté les modalités.</p>
+    lecture-seule: false   # true = affichage seul (ex. : contre-signature en lecture)
 ```
+
+> **Notes :**
+> - `texte-consentement` : HTML affiché sous la zone de signature — utiliser pour la formule légale ou le texte de déclaration.
+> - `lecture-seule: false` : permet la saisie ; mettre `true` uniquement pour afficher une signature existante sans permettre de la modifier.
+> - Ne pas utiliser `texteConsentement:` (ancienne syntaxe, non supportée).
+> - **Ne jamais ajouter des champs `nom`, `prénom` ou `initiales` séparément** : le composant `signature` les embarque déjà en interne. Les dupliquer crée une redondance inutile pour l'utilisateur.
 
 ### `suiviEtapesWF` — Suivi visuel des étapes workflow
 ```yaml
@@ -485,6 +515,7 @@ form:
       label:
         fr: Nom
         en: Last name
+  # Ne jamais utiliser ce composant SAUF si explicitement demandé.
 ```
 
 ### `group` — Groupe de composants liés
@@ -502,28 +533,35 @@ form:
         en: Field
 ```
 
+> **⚠️ Règle :** Un `group` ne peut **jamais** être imbriqué dans un autre `group` ni dans un `repeatableGroup`. Si des sous-sections visuelles sont nécessaires à l'intérieur d'un groupe répétable, lister les champs à plat directement dans `components`.
+
 ### `repeatableGroup` — Groupe répétable
 ```yaml
 - type: repeatableGroup
   name: enfants
   label:
     fr: Enfants
-    en: Children
   repeatable: true
   minimum: 0                # Nombre minimum d'instances
   limit: 5                  # Nombre maximum d'instances
+  addLabel:
+    fr: Ajouter un enfant   # Libellé du bouton d'ajout — OBLIGATOIRE
+  removeLabel:
+    fr: Retirer cet enfant   # Libellé du bouton de suppression — OBLIGATOIRE
   components:
     - type: text
       name: prenomEnfant
       label:
         fr: Prénom de l'enfant
-        en: Child's first name
     - type: date
       name: dateNaissanceEnfant
       label:
         fr: Date de naissance
-        en: Date of birth
 ```
+
+> **⚠️ Règles :**
+> - `addLabel` et `removeLabel` sont **obligatoires** sur tout `repeatableGroup`. Toujours les formuler à partir du nom de l'entité répétable (ex. « Ajouter un locataire » / « Retirer un locataire »).
+> - Les composants `group` ne sont **pas** autorisés dans les `components` d'un `repeatableGroup`. Lister tous les champs directement à la racine de `components`.
 
 ---
 
