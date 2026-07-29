@@ -286,7 +286,7 @@ form:
     fr: Région
     en: Region
   options: regionsDomaine  # Référence à un domaine défini dans config.domaines
-  additionnals:
+  additionals:
     recherchable: true # Pour activer la recherche (si plus de 20 options ou si explicitement demandé)
     multiple: true # Pour sélection multiple. 
     largeur: lg # Largeur de la liste. Tentez d'utiliser la largeur qui correspond à l'option dont le texte est le plus long. Valeurs possibles : lg (528px), md (342px), sm (156px). Défaut md.
