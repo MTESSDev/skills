@@ -4,6 +4,7 @@ description: >
   Générer et valider des fichiers de configuration YAML pour FRW (Formulaires Web — MTESSDev/MESS Québec).
   Utilise ce skill dès que la conversation implique des fichiers *.form.yml, *.bind.yml, *.transmission.yml,
   un aiguillage FRW, des composants de formulaire FRW, des formules de binding, des workflows FRW,
+  un préremplissage de formulaire anonyme (lien prérempli, formulairePreremplissage),
   ou toute configuration du système FRW gouvernemental québécois.
   Déclenche-toi aussi si l'utilisateur mentionne « FRW », « Formulaire Web », ou demande d'intégrer un formulaire au système FRW.
 ---
@@ -89,6 +90,7 @@ form:
 | Sujet | Fichier de référence |
 |---|---|
 | Bloc `config`, composants, aiguillage, domaines, validation, `v-if`, groupes répétables, JS injecté | `references/form.md` |
+| Préremplissage anonyme par lien, formulaire de préremplissage (`formulairePreremplissage`, `/0/P`) | `references/form.md` section 11 |
 | Structure `bind`, formules, `conditionsEt/Ou`, bundles, estampille | `references/bind.md` |
 | Tâches de transmission, `http_client`, courriels, workflows multi-étapes | `references/transmission.md` |
 
@@ -105,6 +107,7 @@ form:
 7. **Gabarits PDF** : référencer sans extension ni chemin (`fr: MonGabarit.v1.FR`).
 8. **Conditions bundle** : une condition vraie = le bundle est **exclu** ; une formule vide = toujours inclus.
 9. **`validations:`** (avec s) et non `validation:`. `required` est implicite — ne pas l'écrire. Pour un champ optionnel : `optional:`.
+10. **`formulairePreremplissage`** est une section **racine** (au même niveau que `form:`), réservée aux formulaires anonymes. Chaque `name` doit exister dans le formulaire (`type: hidden` pour une donnée seulement) ; un `hidden` doit y préciser `type` et `label`. Voir `references/form.md` section 11.
 
 ---
 
@@ -162,6 +165,8 @@ objet: Confirmation : demande
 - Écrire `validation:` au lieu de `validations:` → les règles sont ignorées silencieusement
 - Ne pas quoter une string avec `:` → parsing YAML cassé
 - Oublier la section `revision` en fin de formulaire → bouton de soumission absent ou mal géré
+- Ajouter `formulairePreremplissage` sans `exigerPreremplissage: false` à un formulaire qui doit rester ouvrable normalement → il ne peut plus être débuté sans lien prérempli
+- Déclarer dans `formulairePreremplissage` un champ absent du formulaire → erreur de config (le déclarer `type: hidden` dans le formulaire)
 
 ---
 

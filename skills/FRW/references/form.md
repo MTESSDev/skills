@@ -11,6 +11,7 @@
 8. [JavaScript injecté](#8-javascript-injecté)
 9. [Workflows — filtreEtapes et courrielWorkflow](#9-workflows--filtreetapes-et-courrielworkflow)
 10. [Section Révision (obligatoire)](#10-section-révision-obligatoire)
+11. [Préremplissage anonyme — `formulairePreremplissage`](#11-préremplissage-anonyme--formulairepreremplissage)
 
 ---
 
@@ -25,6 +26,9 @@
 config:
   securite:
     accesAnonyme: true          # true = formulaire public, false = portail authentifié
+    whitelistPreremplissageAnonyme:   # Champs acceptés dans le préremplissage par URL (voir section 11)
+      - form.prop1
+      - form.unGroupe.*         # ".*" : toutes les propriétés enfant (à partir du 2e niveau)
   
   systemesDelegues:             # GUIDs des systèmes autorisés (Zone Entreprise)
     - 571EE295-FFA1-4A06-9D19-5E6395697D94
@@ -895,6 +899,21 @@ form:
                 en: Tenant's email
 ```
 
+Formes acceptées pour `filtreEtapes` (sur un `sectionGroup` ou une `section`) :
+
+```yaml
+filtreEtapes:
+  - initial:                    # Étape, tous les participants
+  - initial: tous               # Idem, explicite
+  - signature: locataire        # Un rôle
+  - contribution:               # Liste de rôles, ou de rôle: index du participant
+      - locataire: 1
+      - locateur                # Tous les locateurs
+      - tous:                   # Tous les participants
+# Une table est aussi acceptée : filtreEtapes: { initial: tous }
+# Un index est un entier, « tous » ou vide (jamais un autre texte : erreur à l'exécution)
+```
+
 ---
 
 ## 10. Section Révision (obligatoire)
@@ -931,7 +950,7 @@ La section de révision est **toujours la dernière section** d'un formulaire FR
     # État 3 — Validation échouée, des erreurs sont présentes
     - type: dynamic
       tag: div
-      v-if: "val('EtatRevision') === 'avec-erreur'"
+      v-if: "val('EtatRevision') === 'contient-erreurs'"
       classes: texte-revision
       text:
         fr: |
@@ -954,7 +973,7 @@ La section de révision est **toujours la dernière section** d'un formulaire FR
 |---|---|---|
 | `initial` | Chargement du formulaire, avant toute validation | Invite l'utilisateur à cliquer sur « Valider » |
 | `sans-erreur` | Après validation sans aucune erreur | Autorise la soumission |
-| `avec-erreur` | Après validation avec au moins une erreur | Invite à corriger avant de soumettre |
+| `contient-erreurs` | Après validation avec au moins une erreur | Invite à corriger avant de soumettre |
 
 FRW gère automatiquement la transition entre ces états via son moteur de validation — **ne pas gérer `EtatRevision` manuellement**.
 
@@ -972,3 +991,93 @@ FRW gère automatiquement la transition entre ces états via son moteur de valid
 | `cacherTexteExplicatifChampsObligatoires` absent | Texte parasite « * champ obligatoire » affiché |
 | Champs interactifs dans la section | Comportement de validation indéfini |
 | Section pas en dernière position | Navigation incorrecte, soumission impossible |
+
+---
+
+## 11. Préremplissage anonyme — `formulairePreremplissage`
+
+Un formulaire **anonyme** (`securite.accesAnonyme: true`) peut être prérempli par un lien contenant les données : paramètre `donnees` = json `{"form": {...}}` encodé en UTF-8 puis en base 64 (et encodé pour l'URL). Seules les propriétés autorisées sont conservées (liste blanche effective, ci-dessous).
+
+Le **formulaire de préremplissage** produit ce lien sans manipuler de json : une personne (ex. un agent) saisit les valeurs, clique sur « Générer le lien » et obtient un lien à donner à n'importe qui. Il est accessible à `/fr/Form/{système}/{formulaire}/0/P` et rendu par le moteur du formulaire, sur une seule page, sans session ni instance.
+
+### Configuration
+
+Section **racine**, au même niveau que `form:` (et non dans `config`). Sa présence active le préremplissage.
+
+```yaml
+config:
+  securite:
+    accesAnonyme: true                 # Obligatoire : le lien crée une instance anonyme
+
+form:
+  sectionsGroup:
+    - sections:
+        - id: infos
+          components:
+            - name: nom
+              type: text
+              label:
+                fr: Nom
+            - name: courrielAgent      # Déclaré dans le formulaire, caché
+              type: hidden
+
+formulairePreremplissage:
+  title:                               # Titre de la page (le titre du formulaire ne change pas)
+    fr: Générer un lien prérempli
+  lienDirect: false                    # Défaut false : le lien passe par la page « Débuter »
+  exigerPreremplissage: true           # Défaut true : le formulaire ne peut être débuté qu'avec un lien prérempli
+  components:
+    - type: dynamic                    # Sans name : repris tel quel (affichage seulement)
+      tag: p
+      text:
+        fr: Saisissez votre courriel pour obtenir un lien à transmettre aux participants.
+    - name: courrielAgent              # hidden → affiché comme courriel, obligatoire par défaut
+      type: email
+      label:
+        fr: Courriel de l'agent
+    - name: nom                        # Hérite de tout du formulaire
+      validations:
+        optional:                      # Facultatif dans le préremplissage seulement
+```
+
+### Règles
+
+- **Composant avec `name`** : fusionné avec le composant du **même nom** dans le formulaire (`prefixId` inclus, ex. `conjoint_nom`) ; les propriétés déclarées ici l'emportent, clé par clé (ex. `validations` remplace toutes les validations du composant).
+- Le `name` **doit exister** dans le formulaire. Un champ qui ne sert qu'à porter une donnée se déclare `type: hidden` dans le formulaire.
+- Un champ `hidden` du formulaire doit préciser un `type` **et** un `label` dans `formulairePreremplissage`.
+- Un composant **groupe** (ex. `adresse`, `group`) est repris en entier ; un champ à l'intérieur d'un groupe ne peut pas être déclaré seul.
+- Les `v-if` et `requisSi` du composant du formulaire ne sont **pas** repris (ils dépendent de champs absents) ; les redéclarer au besoin.
+- **Composant sans `name`** (`dynamic`, `avis`, etc.) : repris tel quel, à sa place.
+- Validations : convention habituelle — obligatoire par défaut, `validations: optional:` pour rendre facultatif.
+- Le formulaire lui-même n'est **jamais modifié** : la fusion sert uniquement à afficher le formulaire de préremplissage.
+- **Liste blanche effective** = `securite.whitelistPreremplissageAnonyme` + `form.{name}` et `form.{name}.*` de chaque composant de la section : inutile de déclarer ces champs deux fois.
+
+### Options
+
+| Option | Défaut | Effet |
+|---|---|---|
+| `title` | Texte `textes.preremplissage.titrePage` (config globale), sinon titre du formulaire | Titre de la page de préremplissage |
+| `lienDirect` | `false` | `true` : le lien ouvre directement le formulaire (`/0/N`) ; chaque ouverture du lien (aperçus de liens, antivirus de courriel) crée une instance. `false` : le lien passe par la page « Débuter », l'instance n'est créée qu'au clic sur « Commencer ». |
+| `exigerPreremplissage` | `true` | `true` : `/0/N` et la page « Débuter » sont refusés sans préremplissage contenant au moins une donnée autorisée sous `form`. Mettre `false` pour garder le formulaire ouvrable sans lien (ex. formulaire de démonstration). |
+
+Textes de l'interface : textes i18n de la section racine `textes` (configuration globale, surchargeables par système ou formulaire) — `textes.preremplissage.titrePage`, `boutonGenerer`, `titreLien`, `texteLien`, `libelleLien`, `boutonCopier`; le bouton de fermeture utilise `boutons.fermer`.
+
+### Comportement de la page
+
+- Une seule page, sans étapier, sans bouton « Enregistrer » ni message incitant à enregistrer.
+- Un seul bouton « Générer le lien » : il valide les champs, puis affiche le lien (avec un bouton « Copier ») s'il n'y a pas d'erreur. Il reste affiché après une erreur.
+
+### Erreurs de config (affichées en erreur 500 sur `/0/P`)
+
+| Erreur | Correction |
+|---|---|
+| Le champ « x » n'existe pas dans le formulaire | Déclarer le champ dans le formulaire (`type: hidden` s'il ne sert qu'à porter une donnée) ou corriger le `name` (`prefixId` inclus) |
+| Le champ « x » est caché (hidden)… doit préciser un type et un label | Ajouter `type` et `label` dans `formulairePreremplissage` |
+| Le champ « x » est déclaré plus d'une fois | Retirer le doublon |
+| La section doit contenir au moins un composant | Ajouter `components` |
+
+### Pièges
+
+- Oublier `exigerPreremplissage: false` sur un formulaire qui doit rester ouvrable normalement → `/0/N` et la page « Débuter » redirigent vers « session invalide » sans lien prérempli.
+- Mettre `formulairePreremplissage` dans `config` → ignoré : c'est une section racine.
+- Utiliser un champ de préremplissage dans une transmission : le lire avec `{{donneesFormulaire.form.courrielAgent}}` (ex. destinataire d'un courriel).
