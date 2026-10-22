@@ -11,7 +11,7 @@
 8. [JavaScript injecté](#8-javascript-injecté)
 9. [Workflows — filtreEtapes et courrielWorkflow](#9-workflows--filtreetapes-et-courrielworkflow)
 10. [Section Révision (obligatoire)](#10-section-révision-obligatoire)
-11. [Préremplissage anonyme — `formulairePreremplissage`](#11-préremplissage-anonyme--formulairepreremplissage)
+11. [Préremplissage anonyme — `formPreremplissage`](#11-préremplissage-anonyme--formpreremplissage)
 
 ---
 
@@ -994,7 +994,7 @@ FRW gère automatiquement la transition entre ces états via son moteur de valid
 
 ---
 
-## 11. Préremplissage anonyme — `formulairePreremplissage`
+## 11. Préremplissage anonyme — `formPreremplissage`
 
 Un formulaire **anonyme** (`securite.accesAnonyme: true`) peut être prérempli par un lien contenant les données : paramètre `donnees` = json `{"form": {...}}` encodé en UTF-8 puis en base 64 (et encodé pour l'URL). Seules les propriétés autorisées sont conservées (liste blanche effective, ci-dessous).
 
@@ -1021,7 +1021,7 @@ form:
             - name: courrielAgent      # Déclaré dans le formulaire, caché
               type: hidden
 
-formulairePreremplissage:
+formPreremplissage:
   title:                               # Titre de la page (le titre du formulaire ne change pas)
     fr: Générer un lien prérempli
   lienDirect: false                    # Défaut false : le lien passe par la page « Débuter »
@@ -1044,7 +1044,7 @@ formulairePreremplissage:
 
 - **Composant avec `name`** : fusionné avec le composant du **même nom** dans le formulaire (`prefixId` inclus, ex. `conjoint_nom`) ; les propriétés déclarées ici l'emportent, clé par clé (ex. `validations` remplace toutes les validations du composant).
 - Le `name` **doit exister** dans le formulaire. Un champ qui ne sert qu'à porter une donnée se déclare `type: hidden` dans le formulaire.
-- Un champ `hidden` du formulaire doit préciser un `type` **et** un `label` dans `formulairePreremplissage`.
+- Un champ `hidden` du formulaire doit préciser un `type` **et** un `label` dans `formPreremplissage`.
 - Un composant **groupe** (ex. `adresse`, `group`) est repris en entier ; un champ à l'intérieur d'un groupe ne peut pas être déclaré seul.
 - Les `v-if` et `requisSi` du composant du formulaire ne sont **pas** repris (ils dépendent de champs absents) ; les redéclarer au besoin.
 - **Composant sans `name`** (`dynamic`, `avis`, etc.) : repris tel quel, à sa place.
@@ -1072,12 +1072,12 @@ Textes de l'interface : textes i18n de la section racine `textes` (configuration
 | Erreur | Correction |
 |---|---|
 | Le champ « x » n'existe pas dans le formulaire | Déclarer le champ dans le formulaire (`type: hidden` s'il ne sert qu'à porter une donnée) ou corriger le `name` (`prefixId` inclus) |
-| Le champ « x » est caché (hidden)… doit préciser un type et un label | Ajouter `type` et `label` dans `formulairePreremplissage` |
+| Le champ « x » est caché (hidden)… doit préciser un type et un label | Ajouter `type` et `label` dans `formPreremplissage` |
 | Le champ « x » est déclaré plus d'une fois | Retirer le doublon |
 | La section doit contenir au moins un composant | Ajouter `components` |
 
 ### Pièges
 
 - Oublier `exigerPreremplissage: false` sur un formulaire qui doit rester ouvrable normalement → `/0/N` et la page « Débuter » redirigent vers « session invalide » sans lien prérempli.
-- Mettre `formulairePreremplissage` dans `config` → ignoré : c'est une section racine.
+- Mettre `formPreremplissage` dans `config` → ignoré : c'est une section racine.
 - Utiliser un champ de préremplissage dans une transmission : le lire avec `{{donneesFormulaire.form.courrielAgent}}` (ex. destinataire d'un courriel).
