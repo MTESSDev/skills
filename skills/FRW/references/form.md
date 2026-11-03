@@ -36,6 +36,7 @@ config:
   afficherBlocCode: true        # Affiche les exemples de code (mode dev/P700U)
   afficherPartagePage: true     # Bouton de partage de page
   formulaireUnilingue: true       # Formulaire en français seulement (pas de bascule de langue)
+  nouveauMoteur: true             # Nouveau moteur (page + lecture du YAML) pour ce fichier ; false ou absent = ancien moteur ; à répéter dans chaque fichier (non hérité du niveau système)
 
   enregistrement:
     actif: false                # Enregistrement/reprise du formulaire
