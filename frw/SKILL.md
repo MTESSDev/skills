@@ -176,6 +176,11 @@ Après chaque création ou modification d'un fichier `.form.yml`, tu **DOIS** ap
 
 L'outil de prévisualisation s'appelle `mtess-frw-bacasable_preview` dans VS Code (GitHub Copilot) et `preview` du serveur MCP `frw-bacasable` dans Claude Code (`mcp__frw-bacasable__preview`).
 
+**Paramètre `line` de l'outil de prévisualisation** (il sert à positionner le fil d'Ariane sur l'élément modifié) :
+- Ne **jamais** deviner, estimer ni réutiliser un numéro de ligne d'un appel précédent : après chaque modification, **relire le fichier** (ou la plage modifiée) et prendre le numéro de la première ligne de l'élément ajouté ou modifié (ex. la ligne `- section:` d'une nouvelle section, la ligne `- type:` d'un nouveau composant).
+- Si plusieurs éléments sont ajoutés, cibler le premier.
+- **Vérifier** que le fil d'Ariane retourné (ex. `/form/sectionsGroup/0/sections/3/id`) correspond bien à l'élément modifié. Sinon, corriger `line` et rappeler l'outil.
+
 **Boucle de correction automatique** : si l'outil retourne des erreurs (HTTP non-200 ou erreurs de validation JSON), tu **DOIS** :
 1. Analyser les erreurs retournées
 2. Corriger le fichier `.form.yml` en conséquence
