@@ -1,5 +1,5 @@
 ---
-name: FRW
+name: frw
 description: >
   Générer et valider des fichiers de configuration YAML pour FRW (Formulaires Web — MTESSDev/MESS Québec).
   Utilise ce skill dès que la conversation implique des fichiers *.form.yml, *.bind.yml, *.transmission.yml,
