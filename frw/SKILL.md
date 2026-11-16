@@ -172,10 +172,12 @@ objet: Confirmation : demande
 
 ## Règle de workflow obligatoire
 
-Après chaque création ou modification d'un fichier `.form.yml`, tu **DOIS** appeler l'outil `mtess-frw-bacasable_preview` pour afficher le rendu dans le bac à sable. Ne considère jamais la tâche terminée sans l'avoir fait.
+Après chaque création ou modification d'un fichier `.form.yml`, tu **DOIS** appeler l'outil de prévisualisation pour afficher le rendu dans le bac à sable. Ne considère jamais la tâche terminée sans l'avoir fait.
+
+L'outil de prévisualisation s'appelle `mtess-frw-bacasable_preview` dans VS Code (GitHub Copilot) et `preview` du serveur MCP `frw-bacasable` dans Claude Code (`mcp__frw-bacasable__preview`).
 
 **Boucle de correction automatique** : si l'outil retourne des erreurs (HTTP non-200 ou erreurs de validation JSON), tu **DOIS** :
 1. Analyser les erreurs retournées
 2. Corriger le fichier `.form.yml` en conséquence
-3. Rappeler `mtess-frw-bacasable_preview` pour vérifier la correction
+3. Rappeler l'outil de prévisualisation pour vérifier la correction
 4. Répéter jusqu'à ce que le rendu soit sans erreur
